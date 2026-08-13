@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Hash store generated during ingestion
+seen_hashes.json
+
+# Environment variables (API keys etc.)
+.env
