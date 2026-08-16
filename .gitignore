@@ -14,3 +14,6 @@ seen_hashes.json
 
 # Environment variables (API keys etc.)
 .env
+
+# Kiro spec files (internal planning, not project code)
+.kiro/
