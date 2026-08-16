@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    env_file:
+      - .env          # put OPENAI_API_KEY=sk-... here (never commit this file)
+    volumes:
+      - .:/app        # code changes reflect instantly without rebuild
+    stdin_open: true
+    tty: true
