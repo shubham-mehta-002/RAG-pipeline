@@ -8,9 +8,7 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     libmagic1 \
     poppler-utils \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
+    && rm -rf /var/lib/apt/lists/*WORKDIR /app
 
 # Install Python dependencies first (better layer caching)
 COPY pyproject.toml .

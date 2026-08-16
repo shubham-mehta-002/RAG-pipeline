@@ -9,5 +9,8 @@ dependencies = [
     "pymupdf>=1.24.0",      # PDF text + image extraction
     "pytesseract>=0.3.10",  # OCR fallback if GPT-4o call fails
     "pillow>=10.0.0",       # Image handling
-    "openai>=1.30.0",       # GPT-4o vision for image/scanned page OCR
+    "openai>=1.30.0",       # embeddings + GPT-4o vision OCR
+    "qdrant-client>=1.9.0", # vector store client
+    "rank-bm25>=0.2.2",     # BM25 keyword search
+    "sentence-transformers>=3.0.0",  # local cross-encoder reranker
 ]
