@@ -15,6 +15,7 @@ RRF formula:  score(d) = Σ 1 / (k + rank(d))
 """
 
 import os
+import uuid
 from dataclasses import dataclass
 
 from qdrant_client import QdrantClient
@@ -65,16 +66,20 @@ def _build_bm25_index() -> tuple[BM25Okapi, list[dict]]:
     chunks = []
     offset = None
     while True:
-        results, offset = client.scroll(
+        response = client.scroll(
             collection_name=_CHILDREN_COLLECTION,
             with_payload=True,
             with_vectors=False,
             limit=100,
             offset=offset,
         )
-        chunks.extend([r.payload for r in results])
-        if offset is None:
+        # qdrant-client 1.9+ returns a ScrollResult object; unpack safely
+        points = response[0] if isinstance(response, tuple) else response.points
+        next_offset = response[1] if isinstance(response, tuple) else response.next_page_offset
+        chunks.extend([r.payload for r in points])
+        if next_offset is None:
             break
+        offset = next_offset
 
     # Tokenise by whitespace for BM25
     tokenised = [c.get("content", "").lower().split() for c in chunks]
@@ -87,6 +92,16 @@ def _get_bm25() -> tuple[BM25Okapi, list[dict]]:
     if _bm25_index is None:
         _bm25_index, _bm25_chunks = _build_bm25_index()
     return _bm25_index, _bm25_chunks
+
+
+def invalidate_bm25_cache() -> None:
+    """Clear the in-memory BM25 index so it is rebuilt on the next query.
+
+    Call this after ingesting new documents to keep BM25 in sync with Qdrant.
+    """
+    global _bm25_index, _bm25_chunks
+    _bm25_index = None
+    _bm25_chunks = None
 
 
 # --- RRF fusion ---
@@ -120,8 +135,8 @@ def retrieve(query: str, top_n: int = _FINAL_TOP_N) -> list[RetrievalResult]:
     and the fused RRF score.
     """
     # --- Step 1: Embed the query ---
-    # embed() expects a list of Chunk objects; we build a minimal one
-    query_chunk = Chunk(id="query", content=query, parent_id=None)
+    # embed() only uses .content — parent_id and id are not used for embedding
+    query_chunk = Chunk(id=str(uuid.uuid4()), content=query, parent_id=None)
     query_vector = embed([query_chunk])[0]
 
     # --- Step 2: Vector search ---

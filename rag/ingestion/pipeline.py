@@ -26,6 +26,7 @@ from rag.ingestion.processors.hierarchy import build_hierarchy
 from rag.ingestion.chunking.parent_child import chunk_document
 from rag.embeddings.embedder import embed
 from rag.embeddings.vector_store import ensure_collections, store_children, store_parents
+from rag.retrieval.retriever import invalidate_bm25_cache
 
 
 # Module-level singletons — created once, reused for every call
@@ -78,3 +79,6 @@ def ingest(path: str) -> None:
     ensure_collections()
     store_children(children, vectors)
     store_parents(parents)
+
+    # Invalidate BM25 cache so next query picks up the new chunks
+    invalidate_bm25_cache()

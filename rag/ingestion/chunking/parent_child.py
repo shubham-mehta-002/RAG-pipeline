@@ -51,10 +51,6 @@ CHILD_CHUNK_OVERLAP = 20    # token overlap between consecutive children
 
 # --- Helpers ---
 
-def _approx_tokens(text: str) -> int:
-    """Approximate token count using word count × 1.3."""
-    return int(len(text.split()) * 1.3)
-
 
 def _split_into_children(text: str, parent_id: str, base_metadata: dict) -> list[Chunk]:
     """Split *text* into overlapping child chunks of ~CHILD_CHUNK_TOKENS tokens."""

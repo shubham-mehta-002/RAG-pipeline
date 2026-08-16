@@ -147,6 +147,7 @@ def parse_pdf(path: str) -> Document:
                     "height": img.height,
                 },
             ))
+            element_index += 1
 
     pdf.close()
     return document

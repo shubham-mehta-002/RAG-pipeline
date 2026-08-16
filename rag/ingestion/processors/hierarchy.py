@@ -17,7 +17,6 @@ After this step every non-heading element has:
 """
 
 import fitz
-from pathlib import Path
 
 from rag.ingestion.models import Document
 

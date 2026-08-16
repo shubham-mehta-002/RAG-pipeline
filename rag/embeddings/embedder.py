@@ -38,7 +38,12 @@ def embed(chunks: list[Chunk]) -> list[list[float]]:
 
     for i in range(0, len(chunks), _BATCH_SIZE):
         batch = chunks[i: i + _BATCH_SIZE]
-        texts = [chunk.content for chunk in batch]
+        texts = [chunk.content or "" for chunk in batch]
+
+        # Skip batch if all texts are empty
+        if not any(texts):
+            vectors.extend([[0.0] * 1536] * len(batch))
+            continue
 
         response = _client.embeddings.create(
             model=_MODEL,
